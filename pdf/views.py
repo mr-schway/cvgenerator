@@ -1,6 +1,10 @@
 from django.shortcuts import render
 
 from pdf.models import Profile
+import pdfkit
+from django.http import HttpResponse
+from django.template import loader
+import io 
 
 # Create your views here.
 def accept(request):
@@ -32,4 +36,14 @@ def accept(request):
 
 def cv(request, id):
   profile = Profile.objects.get(pk = id)
-  return render(request, 'pdf/cv.html', {'profile': profile})
+  template = loader.get_template('pdf/cv.html')
+  html = template.render({'profile': profile})
+  options = {
+    'page-size': 'Letter',
+    'encoding': 'UTF-8',
+  }
+  pdf = pdfkit.from_string(html, False, options)
+  response = HttpResponse(pdf, content_type = 'application/pdf')
+  response['Content-Disposition'] = 'attachment'
+  filename = "cv.pdf"
+  return response
