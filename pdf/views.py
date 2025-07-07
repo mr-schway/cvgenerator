@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from pdf.models import Profile
 import pdfkit
@@ -31,6 +31,7 @@ def accept(request):
       skills = skills
     )
     profile.save()
+    return redirect('cv', id=profile.id)
 
   return render(request, 'pdf/accept.html')
 
